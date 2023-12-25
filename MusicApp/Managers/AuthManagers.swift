@@ -29,24 +29,28 @@ class AuthManager {
         return accessToken != nil
     }
     
-    var accessToken: String?{
+   private var accessToken: String?{
         return UserDefaults.standard.string(forKey: "access_token")
     }
     
-    var refreshToken: String?{
+   private var refreshToken: String?{
         return UserDefaults.standard.string(forKey: "refresh_token")
     }
     
-    var tokenExpiredDate: Date?{
+   private var tokenExpiredDate: Date?{
         return UserDefaults.standard.object(forKey: "expirationDate") as? Date
     }
     
-    var shouldRefreshToken: Bool{
-        guard let expirationDate = tokenExpiredDate else {return false}
+   private var shouldRefreshToken: Bool{
+        guard let expirationDate = tokenExpiredDate else {return true}
         let fiveMin: TimeInterval = 300
         let currentDate = Date()
         return currentDate.addingTimeInterval(fiveMin) >= expirationDate
     }
+    
+   private var isRefreshing = false
+    
+   private var apiCallWhenRefreshing: [(String) -> Void] = []
     
     func exchangeTokenForCode(_ code : String, completion : @escaping (Bool) -> Void){
         guard let url = URL(string: Constants.tokenAPIURL) else {
@@ -99,20 +103,41 @@ class AuthManager {
         task.resume()
     }
     
-    func refreshAccessToken(completion : @escaping (Bool) -> Void){
-        guard shouldRefreshToken else {
-            completion(false)
+    func checkValidTokenWhenCall(completion: @escaping (String) -> Void){
+        if isRefreshing {
+            //đang refresh token thì thêm các api đang gọi vào mảng refresh xog thì call hết những thằng trong mảng này
+            apiCallWhenRefreshing.append(completion)
+            return
+        }
+        if shouldRefreshToken {
+            self.refreshAccessToken { isSuccess in
+                if isSuccess, let token = self.accessToken{
+                    completion(token)
+                }
+            }
+        }
+        else if let token = accessToken{
+            completion(token)
+        }
+        
+    }
+    
+    func refreshAccessToken(completion : ( (Bool) -> Void)?){
+        if (isRefreshing || !shouldRefreshToken){
+            completion?(false)
             return
         }
         
         guard let refreshToken = self.refreshToken else {
-            completion(false)
+            completion?(false)
             return
         }
         
+        isRefreshing = true
+        
         // Refresh the token
         guard let url = URL(string: Constants.tokenAPIURL) else {
-            completion(false)
+            completion?(false)
             return
         }
         
@@ -136,30 +161,33 @@ class AuthManager {
         
         guard let base64String = data?.base64EncodedString() else {
             print("Failure to get base64")
-            completion(false)
+            completion?(false)
             return
         }
         request.setValue("Basic \(base64String)", forHTTPHeaderField: "Authorization")
         
         let task = URLSession.shared.dataTask(with: request) {data, _, error in
+            self.isRefreshing = false
             guard let data = data, error == nil else {
-                completion(false)
+                completion?(false)
                 return
             }
             do {
                 let result = try JSONDecoder().decode(AuthResponse.self, from: data)
                 self.saveToken(result: result)
-                completion(true)
+                completion?(true)
+                self.apiCallWhenRefreshing.forEach{ $0(result.access_token) }
+                self.apiCallWhenRefreshing.removeAll()
             }
             catch {
                 print(error.localizedDescription)
-                completion(false)
+                completion?(false)
             }
         }
         task.resume()
     }
     
-    func saveToken(result : AuthResponse){
+   private func saveToken(result : AuthResponse){
         UserDefaults.standard.setValue(result.access_token,forKey: "access_token")
         if let refresh_token = result.refresh_token {
             UserDefaults.standard.setValue(refresh_token,forKey: "refresh_token")
