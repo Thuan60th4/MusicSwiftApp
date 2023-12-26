@@ -48,7 +48,7 @@ class AuthViewController: UIViewController,WKNavigationDelegate {
         AuthManager.shared.exchangeTokenForCode(code) { isSuccess in
             if isSuccess {
                 DispatchQueue.main.async {
-                    let homeView = HomeViewController()
+                    let homeView = UINavigationController(rootViewController: HomeViewController()) 
                     homeView.modalPresentationStyle = .fullScreen
                     self.present(homeView, animated: true)
                 }
