@@ -234,16 +234,16 @@ extension HomeViewController : UICollectionViewDelegate,UICollectionViewDataSour
         let type = sections[indexPath.section]
         switch type {
             case .newReleases(let data):
-                let cell = collectionView.dequeueReusableCell(withReuseIdentifier: NewReleaseCollectionViewCell.identifier, for: indexPath)
-                cell.backgroundColor = .green
+                let cell = collectionView.dequeueReusableCell(withReuseIdentifier: NewReleaseCollectionViewCell.identifier, for: indexPath) as! NewReleaseCollectionViewCell
+                cell.configure(data: data[indexPath.row])
                 return cell
             case .featuredPlaylists(let data):
-                let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FeaturedPlaylistCollectionViewCell.identifier, for: indexPath)
-                cell.backgroundColor = .red
+                let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FeaturedPlaylistCollectionViewCell.identifier, for: indexPath) as! FeaturedPlaylistCollectionViewCell
+                cell.configure(data: data[indexPath.row])
                 return cell
             case .recommendedTracks(let data):
-                let cell = collectionView.dequeueReusableCell(withReuseIdentifier: RecommendedTrackCollectionViewCell.identifier, for: indexPath)
-                cell.backgroundColor = .blue
+                let cell = collectionView.dequeueReusableCell(withReuseIdentifier: RecommendedTrackCollectionViewCell.identifier, for: indexPath) as! RecommendedTrackCollectionViewCell
+                cell.configure(data: data[indexPath.row])
                 return cell
         }
     }
