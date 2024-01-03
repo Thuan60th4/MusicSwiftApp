@@ -14,10 +14,11 @@ class RecommendedTrackCollectionViewCell: UICollectionViewCell {
         let containStackView = UIStackView()
         containStackView.axis = .horizontal
         containStackView.spacing = 10
+        containStackView.isLayoutMarginsRelativeArrangement = true
         return containStackView
     }()
     
-    private let albumImageView: UIImageView = {
+     private let albumImageView: UIImageView = {
        let albumImageView = UIImageView()
         albumImageView.contentMode = .scaleAspectFill
         albumImageView.translatesAutoresizingMaskIntoConstraints = false
@@ -72,7 +73,13 @@ class RecommendedTrackCollectionViewCell: UICollectionViewCell {
     }
     
     func configure(data : RecommendedTrackCellModel){
-        albumImageView.sd_setImage(with: data.artworkURL, completed: nil)
+        if data.artworkURL != nil {
+            albumImageView.sd_setImage(with: data.artworkURL, completed: nil)
+        }
+        else{
+            albumImageView.isHidden = true
+            containStackView.layoutMargins = UIEdgeInsets(top: 0, left: 10, bottom: 0, right: 10)
+        }
         trackNameLabel.text = data.name
         artisNameLabel.text = data.artistName
     }

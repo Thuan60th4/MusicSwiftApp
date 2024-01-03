@@ -18,7 +18,7 @@ class ApiManagers {
     }
     
     func getNewReleases(completion: @escaping (NewReleasesResponse?) -> Void) {
-        createRequest(with: URL(string: Constants.baseUrl + "/browse/new-releases?limit=50"), method: .GET) {
+        createRequest(with:"/browse/new-releases?limit=50", method: .GET) {
             request in
             let task = URLSession.shared.dataTask(with: request) { data, _, error in
                 guard let data = data, error == nil else {
@@ -30,6 +30,7 @@ class ApiManagers {
                     completion(result)
                 }
                 catch {
+                    print("getNewReleases",error.localizedDescription)
                     completion(nil)
                 }
             }
@@ -38,18 +39,19 @@ class ApiManagers {
     }
     
     func getFeaturedPlaylists(completion: @escaping (FeaturedPlaylistsResponse?) -> Void) {
-        createRequest(with: URL(string: Constants.baseUrl + "/browse/featured-playlists?limit=20"), method: .GET) { request in
+        createRequest(with: "/browse/featured-playlists?limit=20", method: .GET) { request in
             let task = URLSession.shared.dataTask(with: request) { data, _, error in
                 guard let data = data, error == nil else {
                     completion(nil)
                     return
                 }
-                
+
                 do {
                     let result = try JSONDecoder().decode(FeaturedPlaylistsResponse.self, from: data)
                     completion(result)
                 }
                 catch {
+                    print("getFeaturedPlaylists",error.localizedDescription)
                     completion(nil)
                 }
             }
@@ -60,7 +62,7 @@ class ApiManagers {
     func getRecommendations(genres: Set<String>, completion: @escaping (RecommendationsResponse?) -> Void) {
         let seeds = genres.joined(separator: ",")
         createRequest(
-            with: URL(string: Constants.baseUrl + "/recommendations?seed_genres=\(seeds)"),
+            with: "/recommendations?seed_genres=\(seeds)",
             method: .GET
         ) { request in
             let task = URLSession.shared.dataTask(with: request) { data, _, error in
@@ -74,6 +76,7 @@ class ApiManagers {
                     completion(result)
                 }
                 catch {
+                    print("getRecommendations",error.localizedDescription)
                     completion(nil)
                 }
             }
@@ -81,10 +84,28 @@ class ApiManagers {
         }
     }
     
-    public func getRecommendedGenres(completion: @escaping (RecommendedGenresResponse?) -> Void) {
-        createRequest(with: URL(string: Constants.baseUrl + "/recommendations/available-genre-seeds"),
-                      method: .GET
-        ) { request in
+    func getRecommendedGenres(completion: @escaping (RecommendedGenresResponse?) -> Void) {
+        createRequest(with: "/recommendations/available-genre-seeds",method: .GET) { request in
+            let task = URLSession.shared.dataTask(with: request) { data, _, error in
+                guard let data = data, error == nil else {
+                    completion(nil)
+                    return
+                }
+                do {
+                    let result = try JSONDecoder().decode(RecommendedGenresResponse.self, from: data)
+                    completion(result)
+                }
+                catch {
+                    print("getRecommendedGenres",error.localizedDescription)
+                    completion(nil)
+                }
+            }
+            task.resume()
+        }
+    }
+    
+    func getPlayListDetail(for playListId: String, completion : @escaping (PlaylistDetailsResponse?) -> Void){
+        createRequest(with: "/playlists/\(playListId)", method: .GET) { request in
             let task = URLSession.shared.dataTask(with: request) { data, _, error in
                 guard let data = data, error == nil else {
                     completion(nil)
@@ -92,19 +113,38 @@ class ApiManagers {
                 }
                 
                 do {
-                    let result = try JSONDecoder().decode(RecommendedGenresResponse.self, from: data)
+                    let result = try JSONDecoder().decode(PlaylistDetailsResponse.self, from: data)
                     completion(result)
-                }
-                catch {
+                } catch {
                     completion(nil)
                 }
             }
             task.resume()
         }
     }
-    private func createRequest(with url : URL?, method : HTTPMethod, completion : @escaping (URLRequest) -> Void){
+    
+    func getAlbumDetail(for albumId: String, completion : @escaping (AlbumDetailsResponse?) -> Void){
+        createRequest(with: "/albums/\(albumId)", method: .GET) { request in
+            let task = URLSession.shared.dataTask(with: request) { data, _, error in
+                guard let data = data, error == nil else {
+                    completion(nil)
+                    return
+                }
+                
+                do {
+                    let result = try JSONDecoder().decode(AlbumDetailsResponse.self, from: data)
+                    completion(result)
+                } catch {
+                    completion(nil)
+                }
+            }
+            task.resume()
+        }
+    }
+    
+    private func createRequest(with endpoint : String, method : HTTPMethod, completion : @escaping (URLRequest) -> Void){
         AuthManager.shared.checkValidTokenWhenCall { token in
-            guard let url = url else {return}
+            guard let url = URL(string: Constants.baseUrl + endpoint) else {return}
             var request = URLRequest(url: url)
             request.setValue("Bearer \(token)",forHTTPHeaderField: "Authorization")
             request.httpMethod = method.rawValue

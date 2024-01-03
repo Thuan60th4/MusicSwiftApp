@@ -29,3 +29,14 @@ extension UIView{
         return left + width
     }
 }
+
+extension String {
+    func longDate() -> String {
+        let inputFormatter = DateFormatter()
+        inputFormatter.dateFormat = "yyyy-MM-dd"
+        let date = inputFormatter.date(from: self)
+        let outputFormatter = DateFormatter()
+        outputFormatter.dateFormat = "MMM dd, yyyy"
+        return outputFormatter.string(from: date ?? Date())
+    }
+}
