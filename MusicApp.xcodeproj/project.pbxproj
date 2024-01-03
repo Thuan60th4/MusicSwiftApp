@@ -34,6 +34,8 @@
 		43706D732B3710CE00B53A34 /* Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43706D722B3710CE00B53A34 /* Extension.swift */; };
 		43706D752B37183E00B53A34 /* AuthResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43706D742B37183E00B53A34 /* AuthResponse.swift */; };
 		43706D772B371A6400B53A34 /* HomeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43706D762B371A6400B53A34 /* HomeViewController.swift */; };
+		439ED64F2B45B69500D81DAF /* PlayerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 439ED64E2B45B69500D81DAF /* PlayerViewController.swift */; };
+		439ED6512B45CECC00D81DAF /* PlayerControlView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 439ED6502B45CECC00D81DAF /* PlayerControlView.swift */; };
 		43A6740F2B431AC600D18968 /* DetailHeaderCollectionReusableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43A6740E2B431AC600D18968 /* DetailHeaderCollectionReusableView.swift */; };
 		73D208AB23C35343F7961E06 /* Pods_MusicApp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4F3F96E46F8074F4AB28CD56 /* Pods_MusicApp.framework */; };
 /* End PBXBuildFile section */
@@ -68,6 +70,8 @@
 		43706D722B3710CE00B53A34 /* Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extension.swift; sourceTree = "<group>"; };
 		43706D742B37183E00B53A34 /* AuthResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthResponse.swift; sourceTree = "<group>"; };
 		43706D762B371A6400B53A34 /* HomeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeViewController.swift; sourceTree = "<group>"; };
+		439ED64E2B45B69500D81DAF /* PlayerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerViewController.swift; sourceTree = "<group>"; };
+		439ED6502B45CECC00D81DAF /* PlayerControlView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerControlView.swift; sourceTree = "<group>"; };
 		43A6740E2B431AC600D18968 /* DetailHeaderCollectionReusableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailHeaderCollectionReusableView.swift; sourceTree = "<group>"; };
 		43B741CFDE6DFAD3966643C7 /* Pods-MusicApp.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MusicApp.release.xcconfig"; path = "Target Support Files/Pods-MusicApp/Pods-MusicApp.release.xcconfig"; sourceTree = "<group>"; };
 		4F3F96E46F8074F4AB28CD56 /* Pods_MusicApp.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_MusicApp.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -86,16 +90,6 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		43656FFD2B3AF40100A9966D /* Home */ = {
-			isa = PBXGroup;
-			children = (
-				43656FFE2B3AF40B00A9966D /* Cell */,
-				43609F182B4516E300AB3807 /* TitleHeaderCollectionReusableView.swift */,
-				43706D762B371A6400B53A34 /* HomeViewController.swift */,
-			);
-			path = Home;
-			sourceTree = "<group>";
-		};
 		43656FFE2B3AF40B00A9966D /* Cell */ = {
 			isa = PBXGroup;
 			children = (
@@ -144,6 +138,10 @@
 			isa = PBXGroup;
 			children = (
 				43706D622B36FEE000B53A34 /* LaunchScreen.storyboard */,
+				43656FFE2B3AF40B00A9966D /* Cell */,
+				43609F182B4516E300AB3807 /* TitleHeaderCollectionReusableView.swift */,
+				43A6740E2B431AC600D18968 /* DetailHeaderCollectionReusableView.swift */,
+				439ED6502B45CECC00D81DAF /* PlayerControlView.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -171,10 +169,10 @@
 			isa = PBXGroup;
 			children = (
 				43706D5B2B36FEDF00B53A34 /* AuthViewController.swift */,
-				43656FFD2B3AF40100A9966D /* Home */,
-				43A6740E2B431AC600D18968 /* DetailHeaderCollectionReusableView.swift */,
+				43706D762B371A6400B53A34 /* HomeViewController.swift */,
 				43088FD92B3DA6FE00CF302A /* PlaylistViewController.swift */,
 				43088FDF2B3DAB2100CF302A /* AlbumViewController.swift */,
+				439ED64E2B45B69500D81DAF /* PlayerViewController.swift */,
 			);
 			path = Controller;
 			sourceTree = "<group>";
@@ -338,9 +336,11 @@
 				43088FDE2B3DAAE800CF302A /* AlbumDetailsResponse.swift in Sources */,
 				43706D702B37027800B53A34 /* AuthManagers.swift in Sources */,
 				432FB4462B39AFAB004F1710 /* APIImage.swift in Sources */,
+				439ED6512B45CECC00D81DAF /* PlayerControlView.swift in Sources */,
 				436570082B3AFA6800A9966D /* FeaturedPlaylistCellModel.swift in Sources */,
 				436570002B3AF43A00A9966D /* FeaturedPlaylistCollectionViewCell.swift in Sources */,
 				43609F1B2B451E9100AB3807 /* DetailHeaderModel.swift in Sources */,
+				439ED64F2B45B69500D81DAF /* PlayerViewController.swift in Sources */,
 				43706D582B36FEDF00B53A34 /* AppDelegate.swift in Sources */,
 				436570062B3AFA5000A9966D /* NewReleasesCellModel.swift in Sources */,
 				432FB4402B39AD8B004F1710 /* RecommendationsResponse.swift in Sources */,

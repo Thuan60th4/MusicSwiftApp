@@ -10,6 +10,8 @@ import UIKit
 class DetailHeaderCollectionReusableView: UICollectionReusableView {
     static let identifier = "PlaylistHeaderCollectionReusableView"
     
+    var playMusic: (() -> Void)?
+    
     private let imageView: UIImageView = {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFill
@@ -47,6 +49,8 @@ class DetailHeaderCollectionReusableView: UICollectionReusableView {
         addSubview(nameLabel)
         addSubview(descriptionLabel)
         addSubview(playAllButton)
+        playAllButton.addTarget(self, action: #selector(playBtnPressed), for: .touchUpInside)
+
     }
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
@@ -64,9 +68,11 @@ class DetailHeaderCollectionReusableView: UICollectionReusableView {
         let descriptionLabelSize = descriptionLabel.sizeThatFits(CGSize(width: playAllButton.left-20, height: heightDescriptionLabel))
         descriptionLabel.frame = CGRect(x: 10, y: nameLabel.bottom, width: playAllButton.left-20, height: min(descriptionLabelSize.height,heightDescriptionLabel))
         //SizeToFit to resize label smaller if label.text has few text but it can exceed height if it has much text
-
     }
     
+    @objc func playBtnPressed(){
+        self.playMusic?()
+    }
     
     func configure(data : DetailHeaderModel){
         imageView.sd_setImage(with: URL(string: data.imageLink), completed: nil)

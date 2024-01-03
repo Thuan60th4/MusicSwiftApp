@@ -56,11 +56,11 @@ class PlaylistViewController: UIViewController {
         
         collectionView.register(DetailHeaderCollectionReusableView.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: DetailHeaderCollectionReusableView.identifier)
         collectionView.register(RecommendedTrackCollectionViewCell.self, forCellWithReuseIdentifier: RecommendedTrackCollectionViewCell.identifier)
-
+        
         collectionView.delegate = self
         collectionView.dataSource = self
         view.addSubview(collectionView)
-
+        
         ApiManagers.shared.getPlayListDetail(for: playlist.id) {  [weak self] result in
             if let result = result {
                 self?.data = result.tracks.items.compactMap({
@@ -74,9 +74,9 @@ class PlaylistViewController: UIViewController {
                 }
             }
         }
-
+        
     }
-
+    
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         collectionView.frame = view.bounds
@@ -93,6 +93,11 @@ class PlaylistViewController: UIViewController {
         )
         vc.popoverPresentationController?.barButtonItem = navigationItem.rightBarButtonItem
         present(vc, animated: true)
+    }
+    
+    func playAllMusic(){
+        //play list song
+        
     }
     
 }
@@ -115,9 +120,16 @@ extension PlaylistViewController: UICollectionViewDelegate, UICollectionViewData
             let headerView = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: DetailHeaderCollectionReusableView.identifier, for: indexPath) as! DetailHeaderCollectionReusableView
             let detailHeaderModel = DetailHeaderModel(imageLink: playlist.images.first?.url ?? "" , name: playlist.name, description: playlist.description)
             headerView.configure(data: detailHeaderModel)
+            headerView.playMusic = playAllMusic
             return headerView
         }
         return UICollectionReusableView()
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        let playerView = PlayerViewController()
+        playerView.modalPresentationStyle = .overFullScreen
+        present(playerView, animated: true)
     }
     
 }
