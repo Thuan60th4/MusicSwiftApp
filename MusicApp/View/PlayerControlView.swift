@@ -7,14 +7,24 @@
 
 import UIKit
 
-class PlayerControlView: UIStackView {
+protocol PlayControlViewDelegate {
+    func playControlViewDidTapBackBtn()
+    func playControlViewDidTapNextBtn()
+    func playControlViewDidTapPlayPauseBtn(isPlaying: Bool)
+    func volumeChangingSlider(didChangeVolumeValue: Float)
+}
 
+class PlayerControlView: UIStackView {
+    
+    var delegate: PlayControlViewDelegate?
+    var isPlaying = true
+    
     private let containLabelView:UIView = {
         let stackView = UIView()
         return stackView
     }()
     
-    private let musicNameLabel: UILabel = {
+    private let songNameLabel: UILabel = {
         let label = UILabel()
         label.numberOfLines = 1
         label.font = .systemFont(ofSize: 20, weight: .semibold)
@@ -48,27 +58,27 @@ class PlayerControlView: UIStackView {
     
     private let backButton: UIButton = {
         let button = UIButton()
-         button.tintColor = .label
+        button.tintColor = .label
         let image = UIImage(systemName: "backward.fill", withConfiguration: UIImage.SymbolConfiguration(pointSize: 30, weight: .medium))
-         button.setImage(image, for: .normal)
-         return button
-     }()
-     
-     private let nextButton: UIButton = {
+        button.setImage(image, for: .normal)
+        return button
+    }()
+    
+    private let nextButton: UIButton = {
         let button = UIButton()
-         button.tintColor = .label
-         let image = UIImage(systemName: "forward.fill", withConfiguration: UIImage.SymbolConfiguration(pointSize: 30, weight: .medium))
-         button.setImage(image, for: .normal)
-         return button
-     }()
-     
-     private let playPauseButton: UIButton = {
+        button.tintColor = .label
+        let image = UIImage(systemName: "forward.fill", withConfiguration: UIImage.SymbolConfiguration(pointSize: 30, weight: .medium))
+        button.setImage(image, for: .normal)
+        return button
+    }()
+    
+    private let playPauseButton: UIButton = {
         let button = UIButton()
-         button.tintColor = .label
-         let image = UIImage(systemName: "pause.fill", withConfiguration: UIImage.SymbolConfiguration(pointSize: 34, weight: .bold))
-         button.setImage(image, for: .normal)
-         return button
-     }()
+        button.tintColor = .label
+        let image = UIImage(systemName: "pause.fill", withConfiguration: UIImage.SymbolConfiguration(pointSize: 34, weight: .bold))
+        button.setImage(image, for: .normal)
+        return button
+    }()
     
     
     private let volumeSlider: UISlider = {
@@ -83,7 +93,7 @@ class PlayerControlView: UIStackView {
         distribution = .fillEqually
         
         addArrangedSubview(containLabelView)
-        containLabelView.addSubview(musicNameLabel)
+        containLabelView.addSubview(songNameLabel)
         containLabelView.addSubview(singerNameLabel)
         addArrangedSubview(rewindSlider)
         addArrangedSubview(containControllButtonView)
@@ -91,6 +101,11 @@ class PlayerControlView: UIStackView {
         containControllButtonView.addArrangedSubview(playPauseButton)
         containControllButtonView.addArrangedSubview(nextButton)
         addArrangedSubview(volumeSlider)
+        
+        backButton.addTarget(self, action: #selector(didTapBackBtn), for: .touchUpInside)
+        playPauseButton.addTarget(self, action: #selector(didTapPlayPauseBtn), for: .touchUpInside)
+        nextButton.addTarget(self, action: #selector(didTapNextBtn), for: .touchUpInside)
+        volumeSlider.addTarget(self, action: #selector(didChangeVolume), for: .valueChanged)
     }
     
     required init(coder: NSCoder) {
@@ -102,8 +117,33 @@ class PlayerControlView: UIStackView {
         NSLayoutConstraint.activate([
             singerNameLabel.bottomAnchor.constraint(equalTo: containLabelView.bottomAnchor),
             singerNameLabel.leadingAnchor.constraint(equalTo: containLabelView.leadingAnchor),
-            musicNameLabel.leadingAnchor.constraint(equalTo: containLabelView.leadingAnchor),
-            musicNameLabel.bottomAnchor.constraint(equalTo: singerNameLabel.topAnchor,constant: -5)
+            songNameLabel.leadingAnchor.constraint(equalTo: containLabelView.leadingAnchor),
+            songNameLabel.bottomAnchor.constraint(equalTo: singerNameLabel.topAnchor,constant: -5)
         ])
     }
+    
+    @objc func didChangeVolume(sender: UISlider){
+        delegate?.volumeChangingSlider(didChangeVolumeValue: sender.value)
+    }
+    
+    @objc func didTapBackBtn(){
+        delegate?.playControlViewDidTapBackBtn()
+        
+    }
+    @objc func didTapNextBtn(){
+        delegate?.playControlViewDidTapNextBtn()
+    }
+    @objc func didTapPlayPauseBtn(){
+        delegate?.playControlViewDidTapPlayPauseBtn(isPlaying: isPlaying)
+        isPlaying = !isPlaying
+        
+        let icon = UIImage(systemName: isPlaying ? "pause.fill" : "play.fill", withConfiguration: UIImage.SymbolConfiguration(pointSize: 34, weight: .regular))
+        playPauseButton.setImage(icon, for: .normal)
+    }
+    
+    func configureNamelabel(track: AudioTrack?){
+        songNameLabel.text = track?.name
+        singerNameLabel.text = track?.artists.first?.name
+    }
+    
 }

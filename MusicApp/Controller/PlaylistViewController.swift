@@ -10,7 +10,8 @@ import UIKit
 class PlaylistViewController: UIViewController {
     let playlist: Playlist
     var data : [RecommendedTrackCellModel] = []
-    
+    var tracks : [AudioTrack] = []
+
     private let collectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewCompositionalLayout(sectionProvider: { _, _ in
         
         let item = NSCollectionLayoutItem(
@@ -63,6 +64,7 @@ class PlaylistViewController: UIViewController {
         
         ApiManagers.shared.getPlayListDetail(for: playlist.id) {  [weak self] result in
             if let result = result {
+                self?.tracks = result.tracks.items.compactMap({ $0.track })
                 self?.data = result.tracks.items.compactMap({
                     return RecommendedTrackCellModel(
                         name: $0.track.name,
@@ -96,8 +98,7 @@ class PlaylistViewController: UIViewController {
     }
     
     func playAllMusic(){
-        //play list song
-        
+        PlayAudioManager.shared.playAudioTrack(from: self, tracks: tracks)
     }
     
 }
@@ -127,9 +128,9 @@ extension PlaylistViewController: UICollectionViewDelegate, UICollectionViewData
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        let playerView = PlayerViewController()
-        playerView.modalPresentationStyle = .overFullScreen
-        present(playerView, animated: true)
+        collectionView.deselectItem(at: indexPath, animated: true)
+        let track = tracks[indexPath.row]
+        PlayAudioManager.shared.playAudioTrack(from: self, tracks: [track])
     }
     
 }

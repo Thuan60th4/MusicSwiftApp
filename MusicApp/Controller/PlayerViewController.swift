@@ -1,7 +1,7 @@
 import UIKit
 
-class PlayerViewController: UIViewController {
-
+class PlayerViewController: UIViewController{
+    
     private var panGestureRecognizer: UIPanGestureRecognizer!
     
     private let grabberView: UIView = {
@@ -33,7 +33,7 @@ class PlayerViewController: UIViewController {
     }()
     
     private let playerControlView = PlayerControlView()
-
+    
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -44,6 +44,7 @@ class PlayerViewController: UIViewController {
         imageViewContain.addSubview(imageView)
         stackViewContain.addArrangedSubview(playerControlView)
         setupPanGestureRecognizer()
+        playerControlView.delegate = PlayAudioManager.shared
 
     }
     
@@ -94,5 +95,10 @@ class PlayerViewController: UIViewController {
         default:
             break
         }
+    }
+    
+    func configure(currentTrack : AudioTrack?){
+        imageView.sd_setImage(with: URL(string:  currentTrack?.album?.images.first?.url ?? ""), completed: nil)
+        playerControlView.configureNamelabel(track: currentTrack)
     }
 }

@@ -11,6 +11,7 @@ class AlbumViewController: UIViewController {
     
     let album : Album
     var data : [RecommendedTrackCellModel] = []
+    var tracks : [AudioTrack] = []
     
     private let collectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewCompositionalLayout(sectionProvider: { _, _ in
         
@@ -60,6 +61,7 @@ class AlbumViewController: UIViewController {
         view.addSubview(collectionView)
         ApiManagers.shared.getAlbumDetail(for: album.id) { [weak self] result in
             if let result = result {
+                self?.tracks = result.tracks.items
                 self?.data = result.tracks.items.compactMap({
                     return RecommendedTrackCellModel(
                         name: $0.name,
@@ -76,6 +78,10 @@ class AlbumViewController: UIViewController {
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         collectionView.frame = view.bounds
+    }
+    
+    func playAllMusic(){
+        PlayAudioManager.shared.playAudioTrack(from: self, tracks: tracks)
     }
 }
 
@@ -96,9 +102,16 @@ extension AlbumViewController: UICollectionViewDelegate, UICollectionViewDataSou
             let headerView = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: DetailHeaderCollectionReusableView.identifier, for: indexPath) as! DetailHeaderCollectionReusableView
             let detailHeaderModel = DetailHeaderModel(imageLink: album.images.first?.url ?? "" , name: album.name, description: "Release Date: \(album.release_date.longDate())")
             headerView.configure(data: detailHeaderModel)
+            headerView.playMusic = playAllMusic
             return headerView
         }
         return UICollectionReusableView()
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        collectionView.deselectItem(at: indexPath, animated: true)
+        let track = tracks[indexPath.row]
+        PlayAudioManager.shared.playAudioTrack(from: self, tracks: [track])
     }
     
 }
