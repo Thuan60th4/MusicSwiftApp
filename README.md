@@ -1,4 +1,4 @@
-Home view
+<h4>Home view</h4>
 <img src="https://i.imgur.com/AKHxuwY.png" alt="Home view" style=" width: 50%; aspect-ratio: 0.5;">
 
 Home view
