@@ -4,4 +4,4 @@
 ![Detail song view](https://i.imgur.com/lic6SAM.png)
 
 
-<img src="https://i.imgur.com/AKHxuwY.png" alt="Image Description" style="max-width: 60%; height: auto;">
+<img src="https://i.imgur.com/AKHxuwY.png" alt="Image Description" style="max-width: 20%; height: auto;">
