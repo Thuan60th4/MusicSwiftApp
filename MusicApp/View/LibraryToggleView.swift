@@ -7,6 +7,7 @@
 
 import UIKit
 
+//Them anyobject để dùg vs weak
 protocol LibraryToggleViewTap: AnyObject{
     func libraryToggleViewTapPlaylist()
     
@@ -25,12 +26,14 @@ class LibraryToggleView: UIView {
     let playlistBtn: UIButton = {
        let button = UIButton()
         button.setTitle("Playlist", for: .normal)
+        button.setTitleColor(.label, for: .normal)
         return button
     }()
     
     let albumBtn: UIButton = {
        let button = UIButton()
         button.setTitle("Album", for: .normal)
+        button.setTitleColor(.label, for: .normal)
         return button
     }()
     
@@ -64,12 +67,12 @@ class LibraryToggleView: UIView {
     
     //MARK: - Action
     @objc func playlistBtnTap(){
-        updatePositionIndicator(tap: .playlist)
+//        updatePositionIndicator(tap: .playlist)
         delegate?.libraryToggleViewTapPlaylist()
     }
     
     @objc func albumBtnTap(){
-        updatePositionIndicator(tap: .album)
+//        updatePositionIndicator(tap: .album)
         delegate?.libraryToggleViewTapAlbum()
     }
     
@@ -79,7 +82,7 @@ class LibraryToggleView: UIView {
                 case .playlist:
                     self.indicatorView.frame.origin.x = 0
                 case .album:
-                    self.indicatorView.frame.origin.x = 100
+                    self.indicatorView.frame.origin.x = self.albumBtn.left
             }
         }
     }

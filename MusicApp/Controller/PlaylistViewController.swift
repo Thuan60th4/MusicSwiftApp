@@ -9,7 +9,7 @@ import UIKit
 
 class PlaylistViewController: UIViewController {
     let playlist: Playlist
-    var data : [RecommendedTrackCellModel] = []
+    var data : [SongCellModel] = []
     var tracks : [AudioTrack] = []
 
     private let collectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewCompositionalLayout(sectionProvider: { _, _ in
@@ -56,7 +56,7 @@ class PlaylistViewController: UIViewController {
                                                             action: #selector(didTapShare))
         
         collectionView.register(DetailHeaderCollectionReusableView.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: DetailHeaderCollectionReusableView.identifier)
-        collectionView.register(RecommendedTrackCollectionViewCell.self, forCellWithReuseIdentifier: RecommendedTrackCollectionViewCell.identifier)
+        collectionView.register(SongCollectionViewCell.self, forCellWithReuseIdentifier: SongCollectionViewCell.identifier)
         
         collectionView.delegate = self
         collectionView.dataSource = self
@@ -66,10 +66,10 @@ class PlaylistViewController: UIViewController {
             if let result = result {
                 self?.tracks = result.tracks.items.compactMap({ $0.track })
                 self?.data = result.tracks.items.compactMap({
-                    return RecommendedTrackCellModel(
+                    return SongCellModel(
                         name: $0.track.name,
-                        artistName: $0.track.artists.first?.name ?? "-",
-                        artworkURL: URL(string: $0.track.album?.images.first?.url ?? ""))
+                        subName: $0.track.artists.first?.name ?? "-",
+                        imageUrl: URL(string: $0.track.album?.images.first?.url ?? ""))
                 })
                 DispatchQueue.main.async {
                     self?.collectionView.reloadData()
@@ -111,7 +111,7 @@ extension PlaylistViewController: UICollectionViewDelegate, UICollectionViewData
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: RecommendedTrackCollectionViewCell.identifier, for: indexPath) as! RecommendedTrackCollectionViewCell
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: SongCollectionViewCell.identifier, for: indexPath) as! SongCollectionViewCell
         cell.configure(data: data[indexPath.row])
         return cell
     }

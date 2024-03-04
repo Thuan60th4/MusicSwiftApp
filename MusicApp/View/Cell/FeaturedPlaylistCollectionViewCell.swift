@@ -21,6 +21,7 @@ class FeaturedPlaylistCollectionViewCell: UICollectionViewCell {
         label.font = .systemFont(ofSize: 17, weight: .regular)
         label.translatesAutoresizingMaskIntoConstraints = false
         label.textAlignment = .center
+        label.textColor = .white
         return label
     }()
     
@@ -29,6 +30,7 @@ class FeaturedPlaylistCollectionViewCell: UICollectionViewCell {
         label.font = .systemFont(ofSize: 14, weight: .thin)
         label.translatesAutoresizingMaskIntoConstraints = false
         label.textAlignment = .center
+        label.textColor = .white
         return label
     }()
     

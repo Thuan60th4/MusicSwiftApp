@@ -45,7 +45,7 @@ class ApiManagers {
                     completion(nil)
                     return
                 }
-
+                
                 do {
                     let result = try JSONDecoder().decode(FeaturedPlaylistsResponse.self, from: data)
                     completion(result)
@@ -134,6 +134,80 @@ class ApiManagers {
                 do {
                     let result = try JSONDecoder().decode(AlbumDetailsResponse.self, from: data)
                     completion(result)
+                } catch {
+                    completion(nil)
+                }
+            }
+            task.resume()
+        }
+    }
+    
+    public func getCurrentUserProfile(completion: @escaping (UserProfile?) -> Void) {
+        createRequest(
+            with: "/me",
+            method: .GET
+        ) { baseRequest in
+            let task = URLSession.shared.dataTask(with: baseRequest) { data, _, error in
+                guard let data = data, error == nil else {
+                    completion(nil)
+                    return
+                }
+                
+                do {
+                    let result = try JSONDecoder().decode(UserProfile.self, from: data)
+                    completion(result)
+                }
+                catch {
+                    print(error.localizedDescription)
+                    completion(nil)
+                }
+            }
+            task.resume()
+        }
+    }
+    
+    func createUserPlaylist(with name: String, completion: @escaping (Bool) -> Void){
+        getCurrentUserProfile { userProfile in
+            guard let userProfile = userProfile else {
+                completion(false)
+                return
+            }
+            self.createRequest(with: "/users/\(userProfile.id)/playlists", method: .POST) { request in
+                let body = ["name": name]
+                var req = request
+                req.httpBody = try? JSONSerialization.data(withJSONObject: body, options: .fragmentsAllowed)
+                let task = URLSession.shared.dataTask(with: req) { data, _ , error in
+                    guard let data = data, error == nil else {
+                        completion(false)
+                        return
+                    }
+                    do {
+                        let result = try JSONSerialization.jsonObject(with: data, options: .fragmentsAllowed)
+                        if let response = result as? [String: Any], response["id"] as? String != nil {
+                            completion(true)
+                        }
+                        else {
+                            completion(false)
+                        }
+                    } catch {
+                        completion(false)
+                    }
+                }
+                task.resume()
+            }
+        }
+    }
+    
+    func getUserPlaylist(completion : @escaping ([Playlist]?) -> Void){
+        createRequest(with: "/me/playlists/?limit=50", method: .GET) { request in
+            let task = URLSession.shared.dataTask(with: request) { data, _, error in
+                guard let data = data, error == nil else {
+                    completion(nil)
+                    return
+                }
+                do {
+                    let result = try JSONDecoder().decode(LibraryPlaylistsResponse.self, from: data)
+                    completion(result.items)
                 } catch {
                     completion(nil)
                 }

@@ -23,6 +23,8 @@ class LibraryViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(didTapAdd))
+        view.backgroundColor = .systemBackground
         view.addSubview(toggleView)
         toggleView.delegate = self
         
@@ -44,7 +46,6 @@ class LibraryViewController: UIViewController {
     }
     
     private func addSubViewController(){
-        
         //Muốn kéo đc scrollView thì ta buộc phải làm cho nó lớn hơn size của màn hình hoặc set background hay gì đó cho scrollView
         self.addChild(myPlaylistViewController)
         scrollView.addSubview(myPlaylistViewController.view)
@@ -57,6 +58,10 @@ class LibraryViewController: UIViewController {
         myAlbumViewController.didMove(toParent: self)
 
     }
+    
+    @objc private func didTapAdd() {
+        myPlaylistViewController.showCreatePlaylistAlert()
+    }
         
 }
 
@@ -64,8 +69,10 @@ extension LibraryViewController: UIScrollViewDelegate {
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         if scrollView.contentOffset.x > view.width - 100 {
             toggleView.updatePositionIndicator(tap: .album)
+            navigationItem.rightBarButtonItem = nil
         }
         else{
+            navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(didTapAdd))
             toggleView.updatePositionIndicator(tap: .playlist)
         }
     }

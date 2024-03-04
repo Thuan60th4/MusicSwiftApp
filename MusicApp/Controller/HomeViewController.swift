@@ -10,7 +10,7 @@ import UIKit
 enum sectionType {
     case newReleases(data : [NewReleasesCellModel])
     case featuredPlaylists(data : [FeaturedPlaylistCellModel])
-    case recommendedTracks(data : [RecommendedTrackCellModel])
+    case recommendedTracks(data : [SongCellModel])
     
     var title: String {
         switch self {
@@ -45,6 +45,7 @@ class HomeViewController: UIViewController {
         let logoutBtn = UIBarButtonItem(image: UIImage(systemName: "rectangle.portrait.and.arrow.right"), style: .plain, target: self, action: #selector(logout))
 
         navigationItem.rightBarButtonItems = [logoutBtn,albumBtn]
+        navigationController?.navigationBar.tintColor = title.textColor
         configureCollectionView()
         fetchData()
     }
@@ -63,7 +64,7 @@ class HomeViewController: UIViewController {
         collectionView.register(TitleHeaderCollectionReusableView.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: TitleHeaderCollectionReusableView.identifier)
         collectionView.register(NewReleaseCollectionViewCell.self, forCellWithReuseIdentifier: NewReleaseCollectionViewCell.identifier)
         collectionView.register(FeaturedPlaylistCollectionViewCell.self, forCellWithReuseIdentifier: FeaturedPlaylistCollectionViewCell.identifier)
-        collectionView.register(RecommendedTrackCollectionViewCell.self, forCellWithReuseIdentifier: RecommendedTrackCollectionViewCell.identifier)
+        collectionView.register(SongCollectionViewCell.self, forCellWithReuseIdentifier: SongCollectionViewCell.identifier)
         
     }
     
@@ -222,10 +223,10 @@ class HomeViewController: UIViewController {
                 creatorName: $0.owner.display_name)
         })))
         sections.append(.recommendedTracks(data: tracks.compactMap({
-            return RecommendedTrackCellModel(
+            return SongCellModel(
                 name: $0.name,
-                artistName: $0.artists.first?.name ?? "-",
-                artworkURL: URL(string: $0.album?.images.first?.url ?? ""))
+                subName: $0.artists.first?.name ?? "-",
+                imageUrl: URL(string: $0.album?.images.first?.url ?? ""))
         })))
         DispatchQueue.main.async {
             self.collectionView.reloadData()
@@ -264,7 +265,7 @@ extension HomeViewController : UICollectionViewDelegate,UICollectionViewDataSour
                 cell.configure(data: data[indexPath.row])
                 return cell
             case .recommendedTracks(let data):
-                let cell = collectionView.dequeueReusableCell(withReuseIdentifier: RecommendedTrackCollectionViewCell.identifier, for: indexPath) as! RecommendedTrackCollectionViewCell
+                let cell = collectionView.dequeueReusableCell(withReuseIdentifier: SongCollectionViewCell.identifier, for: indexPath) as! SongCollectionViewCell
                 cell.configure(data: data[indexPath.row])
                 return cell
         }

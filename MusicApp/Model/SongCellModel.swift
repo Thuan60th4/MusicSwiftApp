@@ -7,8 +7,8 @@
 
 import Foundation
 
-struct RecommendedTrackCellModel {
+struct SongCellModel {
     let name: String
-    let artistName: String
-    let artworkURL: URL?
+    let subName: String?
+    let imageUrl: URL?
 }
