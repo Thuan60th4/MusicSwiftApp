@@ -50,7 +50,7 @@ class PlayerControlView: UIStackView {
     private let containControllButtonView: UIStackView = {
         let stackView = UIStackView()
         stackView.axis = .horizontal
-        stackView.distribution = .equalSpacing
+        stackView.distribution = .fillEqually
         stackView.layoutMargins = UIEdgeInsets(top: 0, left: 30, bottom: 0, right: 30)
         stackView.isLayoutMarginsRelativeArrangement = true
         return stackView

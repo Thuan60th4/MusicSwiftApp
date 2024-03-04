@@ -1,4 +1,5 @@
 import UIKit
+import AVFAudio
 
 class PlayerViewController: UIViewController{
     
@@ -45,6 +46,14 @@ class PlayerViewController: UIViewController{
         stackViewContain.addArrangedSubview(playerControlView)
         setupPanGestureRecognizer()
         playerControlView.delegate = PlayAudioManager.shared
+        
+        //Play background music
+        do {
+            try AVAudioSession.sharedInstance().setCategory(.playback, mode: .default, options: [.mixWithOthers, .allowAirPlay])
+            try AVAudioSession.sharedInstance().setActive(true)
+        } catch {
+            print(error)
+        }
 
     }
     

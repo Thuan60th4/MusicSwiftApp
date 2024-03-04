@@ -36,10 +36,15 @@ class HomeViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        title = "Spotify"
-        navigationController?.navigationBar.prefersLargeTitles = true
-        navigationItem.largeTitleDisplayMode = .always
+        let title = UILabel()
+        title.text = "Spotify"
+        title.font = UIFont.systemFont(ofSize: 33, weight: .bold)
+        navigationItem.leftBarButtonItem = UIBarButtonItem(customView: title)
         
+        let albumBtn = UIBarButtonItem(image: UIImage(systemName: "music.note.list"), style: .plain, target: self, action: #selector(navigateToMyLibrary))
+        let logoutBtn = UIBarButtonItem(image: UIImage(systemName: "rectangle.portrait.and.arrow.right"), style: .plain, target: self, action: #selector(logout))
+
+        navigationItem.rightBarButtonItems = [logoutBtn,albumBtn]
         configureCollectionView()
         fetchData()
     }
@@ -294,5 +299,17 @@ extension HomeViewController : UICollectionViewDelegate,UICollectionViewDataSour
                 PlayAudioManager.shared.playAudioTrack(from: self, tracks: [track])
                 break
         }
+    }
+    
+    //MARK: - Action
+    @objc func navigateToMyLibrary(){
+        navigationController?.pushViewController(LibraryViewController(), animated: true)
+    }
+    
+    @objc func logout(){
+        let authView = AuthViewController()
+        authView.modalPresentationStyle = .fullScreen
+        present(authView, animated: true)
+        AuthManager.shared.removeToken()
     }
 }

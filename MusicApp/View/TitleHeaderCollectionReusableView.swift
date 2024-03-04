@@ -16,7 +16,7 @@ class TitleHeaderCollectionReusableView: UICollectionReusableView {
     }
     let titleLabel:UILabel = {
        let label = UILabel()
-        label.font = .systemFont(ofSize: 26, weight: .bold)
+        label.font = .systemFont(ofSize: 22, weight: .bold)
         return label
     }()
  

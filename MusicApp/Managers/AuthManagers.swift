@@ -167,7 +167,6 @@ class AuthManager {
         request.setValue("Basic \(base64String)", forHTTPHeaderField: "Authorization")
         
         let task = URLSession.shared.dataTask(with: request) {data, _, error in
-            self.isRefreshing = false
             guard let data = data, error == nil else {
                 completion?(false)
                 return
@@ -175,6 +174,7 @@ class AuthManager {
             do {
                 let result = try JSONDecoder().decode(AuthResponse.self, from: data)
                 self.saveToken(result: result)
+                self.isRefreshing = false
                 completion?(true)
                 self.apiCallWhenRefreshing.forEach{ $0(result.access_token) }
                 self.apiCallWhenRefreshing.removeAll()
@@ -193,5 +193,11 @@ class AuthManager {
             UserDefaults.standard.setValue(refresh_token,forKey: "refresh_token")
         }
         UserDefaults.standard.setValue(Date().addingTimeInterval(TimeInterval(result.expires_in)),forKey: "expirationDate")
+    }
+    
+    func removeToken(){
+        UserDefaults.standard.removeObject(forKey: "access_token")
+        UserDefaults.standard.removeObject(forKey: "refresh_token")
+        UserDefaults.standard.removeObject(forKey: "expirationDate")
     }
 }
