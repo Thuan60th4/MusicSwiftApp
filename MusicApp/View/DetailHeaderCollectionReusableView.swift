@@ -67,7 +67,7 @@ class DetailHeaderCollectionReusableView: UICollectionReusableView {
         let heightDescriptionLabel = height-nameLabel.bottom-10
         let descriptionLabelSize = descriptionLabel.sizeThatFits(CGSize(width: playAllButton.left-20, height: heightDescriptionLabel))
         descriptionLabel.frame = CGRect(x: 10, y: nameLabel.bottom, width: playAllButton.left-20, height: min(descriptionLabelSize.height,heightDescriptionLabel))
-        //SizeToFit to resize label smaller if label.text has few text but it can exceed height if it has much text
+        //SizeToFit để thay đổi kích thước nhãn nhỏ hơn nếu label.text có ít văn bản nhưng có thể tràn khỏi chiều cao nếu có nhiều văn bản
     }
     
     @objc func playBtnPressed(){
@@ -75,7 +75,7 @@ class DetailHeaderCollectionReusableView: UICollectionReusableView {
     }
     
     func configure(data : DetailHeaderModel){
-        imageView.sd_setImage(with: URL(string: data.imageLink), completed: nil)
+        imageView.sd_setImage(with: URL(string: data.imageLink),placeholderImage: UIImage(systemName: "photo"), completed: nil)
         nameLabel.text = data.name
         descriptionLabel.text = data.description
     }

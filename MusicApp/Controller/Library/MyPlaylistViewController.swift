@@ -8,7 +8,8 @@
 import UIKit
 
 class MyPlaylistViewController: UIViewController {
-    var playlist: [Playlist] = []
+    var playlists: [Playlist] = []
+    var selectionHandler: ((Playlist) -> Void)?
     
     let placeholderView = ActionLabelPlaceholderView()
     let tableView = UITableView()
@@ -70,7 +71,7 @@ class MyPlaylistViewController: UIViewController {
     }
     
     func updateUI(){
-        if playlist.count > 0 {
+        if playlists.count > 0 {
             placeholderView.isHidden = true
             tableView.isHidden = false
         }
@@ -83,7 +84,7 @@ class MyPlaylistViewController: UIViewController {
     func fetchData(){
         ApiManagers.shared.getUserPlaylist { playlist in
             if let playlist = playlist {
-                self.playlist = playlist
+                self.playlists = playlist
                 DispatchQueue.main.async {
                     self.tableView.reloadData()
                     self.updateUI()
@@ -104,22 +105,37 @@ extension MyPlaylistViewController: ActionLabelViewDelegate {
 
 extension MyPlaylistViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return playlist.count
+        return playlists.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: SongTableViewCell.identifier, for: indexPath) as! SongTableViewCell
-        let data = playlist[indexPath.row]
+        let data = playlists[indexPath.row]
         cell.configure(data:
                         SongCellModel(
                             name: data.name,
                             subName: nil,
-                            imageUrl: URL(fileURLWithPath: ""))
+                            imageUrl: URL(string: data.images.first?.url ?? ""))
         )
         return cell
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 70
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: true)
+        let playlistData = playlists[indexPath.row]
+        
+        if let selectionHandler = selectionHandler{
+            selectionHandler(playlistData)
+            dismiss(animated: true, completion: nil)
+            return
+        }
+        
+        let playlistView = PlaylistViewController(playlist: playlistData)
+        navigationController?.pushViewController(playlistView, animated: true)
+
     }
 }

@@ -216,6 +216,47 @@ class ApiManagers {
         }
     }
     
+    public func addTrackToPlaylist(
+        track: AudioTrack,
+        playlist: Playlist,
+        completion: @escaping (Bool) -> Void
+    ) {
+        createRequest(
+            with: "/playlists/\(playlist.id)/tracks",
+            method: .POST
+        ) { baseRequest in
+            var request = baseRequest
+            let json = [
+                "uris": [
+                    "spotify:track:\(track.id)"
+                ]
+            ]
+            request.httpBody = try? JSONSerialization.data(withJSONObject: json, options: .fragmentsAllowed)
+            request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+            let task = URLSession.shared.dataTask(with: request) { data, _, error in
+                guard let data = data, error == nil else{
+                    completion(false)
+                    return
+                }
+
+                do {
+                    let result = try JSONSerialization.jsonObject(with: data, options: .allowFragments)
+                    if let response = result as? [String: Any],
+                       response["snapshot_id"] as? String != nil {
+                        completion(true)
+                    }
+                    else {
+                        completion(false)
+                    }
+                }
+                catch {
+                    completion(false)
+                }
+            }
+            task.resume()
+        }
+    }
+    
     private func createRequest(with endpoint : String, method : HTTPMethod, completion : @escaping (URLRequest) -> Void){
         AuthManager.shared.checkValidTokenWhenCall { token in
             guard let url = URL(string: Constants.baseUrl + endpoint) else {return}

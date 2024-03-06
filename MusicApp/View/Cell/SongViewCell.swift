@@ -9,6 +9,8 @@ import UIKit
 
 class SongViewCell: UIView {
     
+    var addToPlaylist: (() -> Void)?
+    
     private let containStackView: UIStackView = {
         let containStackView = UIStackView()
         containStackView.axis = .horizontal
@@ -17,8 +19,8 @@ class SongViewCell: UIView {
         return containStackView
     }()
     
-     private let imageView: UIImageView = {
-       let imageView = UIImageView()
+    private let imageView: UIImageView = {
+        let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFill
         imageView.translatesAutoresizingMaskIntoConstraints = false
         return imageView
@@ -41,7 +43,16 @@ class SongViewCell: UIView {
         subLabel.font = .systemFont(ofSize: 18, weight: .thin)
         return subLabel
     }()
-
+    
+    let optionsButton: UIButton = {
+        let button = UIButton()
+        button.setImage(UIImage(systemName: "ellipsis",withConfiguration: UIImage.SymbolConfiguration(pointSize: 20)), for: .normal)
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.showsMenuAsPrimaryAction = true
+        
+        return button
+    }()
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
         backgroundColor = .secondarySystemBackground
@@ -50,6 +61,14 @@ class SongViewCell: UIView {
         containStackView.addArrangedSubview(containLabelStackView)
         containLabelStackView.addArrangedSubview(label)
         containLabelStackView.addArrangedSubview(subLabel)
+        containStackView.addArrangedSubview(optionsButton)
+        
+        
+        let addToPlaylist = UIAction(title: "Add to a Playlist", image: UIImage(systemName: "text.badge.plus")) {[weak self] _ in
+            self?.addToPlaylist?()
+        }
+        let menu = UIMenu(title: "", children: [addToPlaylist])
+        optionsButton.menu = menu
     }
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
@@ -59,7 +78,8 @@ class SongViewCell: UIView {
         super.layoutSubviews()
         containStackView.frame = bounds
         NSLayoutConstraint.activate([
-            imageView.widthAnchor.constraint(equalToConstant: containStackView.height)
+            imageView.widthAnchor.constraint(equalToConstant: containStackView.height),
+            optionsButton.widthAnchor.constraint(equalToConstant: 40)
         ])
         
     }
@@ -71,13 +91,7 @@ class SongViewCell: UIView {
     }
     
     func configure(data : SongCellModel){
-        if data.imageUrl != nil {
-            imageView.sd_setImage(with: data.imageUrl,placeholderImage: UIImage(systemName: "photo"), completed: nil)
-        }
-        else{
-            imageView.isHidden = true
-            containStackView.layoutMargins = UIEdgeInsets(top: 0, left: 10, bottom: 0, right: 10)
-        }
+        imageView.sd_setImage(with: data.imageUrl,placeholderImage: UIImage(systemName: "photo"), completed: nil)
         label.text = data.name
         if data.subName != nil {
             subLabel.text = data.subName
@@ -91,25 +105,25 @@ class SongViewCell: UIView {
 class SongCollectionViewCell: UICollectionViewCell {
     static let identifier = "SongCollectionViewCell"
     
-    let view = SongViewCell()
-
+    let songView = SongViewCell()
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
-        contentView.addSubview(view)
-        view.frame = contentView.bounds
+        contentView.addSubview(songView)
+        songView.frame = contentView.bounds
     }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
+
     override func prepareForReuse() {
         super.prepareForReuse()
-        view.prepareForReuse()
+        songView.prepareForReuse()
     }
     
     func configure(data : SongCellModel){
-        view.configure(data: data)
+        songView.configure(data: data)
     }
     
 }
@@ -119,10 +133,11 @@ class SongTableViewCell: UITableViewCell {
     static let identifier = "SongTableViewCell"
     
     let songView = SongViewCell()
-
+    
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?){
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         contentView.addSubview(songView)
+        songView.optionsButton.isHidden = true
     }
     
     required init?(coder: NSCoder) {
@@ -131,6 +146,7 @@ class SongTableViewCell: UITableViewCell {
     
     override func layoutSubviews() {
         super.layoutSubviews()
+        contentView.frame = contentView.frame.inset(by: UIEdgeInsets(top: 0, left: 0, bottom: 5, right: 0))
         songView.frame = contentView.bounds
     }
     

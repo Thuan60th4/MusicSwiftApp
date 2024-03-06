@@ -66,7 +66,7 @@ class AlbumViewController: UIViewController {
                     return SongCellModel(
                         name: $0.name,
                         subName: $0.artists.first?.name ?? "-",
-                        imageUrl: nil)
+                        imageUrl: URL(string: self?.album.images.first?.url ?? ""))
                 })
                 DispatchQueue.main.async {
                     self?.collectionView.reloadData()

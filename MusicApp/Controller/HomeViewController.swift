@@ -267,6 +267,16 @@ extension HomeViewController : UICollectionViewDelegate,UICollectionViewDataSour
             case .recommendedTracks(let data):
                 let cell = collectionView.dequeueReusableCell(withReuseIdentifier: SongCollectionViewCell.identifier, for: indexPath) as! SongCollectionViewCell
                 cell.configure(data: data[indexPath.row])
+                cell.songView.addToPlaylist = { [weak self] in
+                    let libraryPlaylistView = MyPlaylistViewController()
+                    libraryPlaylistView.selectionHandler = { playlist in
+                        ApiManagers.shared.addTrackToPlaylist(track: self!.tracks[indexPath.row], playlist: playlist) { isSuccess in
+                        }
+                    }
+                    libraryPlaylistView.title = "Select Playlist"
+                    self?.present(UINavigationController(rootViewController: libraryPlaylistView),
+                                  animated: true, completion: nil)
+                }
                 return cell
         }
     }
