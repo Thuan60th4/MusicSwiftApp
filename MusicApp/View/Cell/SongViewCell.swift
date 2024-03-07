@@ -9,8 +9,6 @@ import UIKit
 
 class SongViewCell: UIView {
     
-    var addToPlaylist: (() -> Void)?
-    
     private let containStackView: UIStackView = {
         let containStackView = UIStackView()
         containStackView.axis = .horizontal
@@ -53,6 +51,31 @@ class SongViewCell: UIView {
         return button
     }()
     
+    var menuAction: UIAction?{
+        didSet{
+            if let menuAction = menuAction {
+                let menu = UIMenu(title: "", children: [menuAction])
+                self.optionsButton.menu = menu
+            }
+        }
+    }
+    
+    var addToPlaylist: (() -> Void)?{
+        didSet{
+            self.menuAction = UIAction(title: "Add to a Playlist", image: UIImage(systemName: "text.badge.plus")) { [weak self] _ in
+                self?.addToPlaylist?()
+            }
+            
+        }
+    }
+    var removeFromPlaylist: (() -> Void)?{
+        didSet{
+            self.menuAction = UIAction(title: "Remove from Playlist",image: UIImage(systemName: "minus.circle"), attributes: .destructive) {[weak self] _ in
+                self?.removeFromPlaylist?()
+            }
+        }
+    }
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
         backgroundColor = .secondarySystemBackground
@@ -64,11 +87,14 @@ class SongViewCell: UIView {
         containStackView.addArrangedSubview(optionsButton)
         
         
-        let addToPlaylist = UIAction(title: "Add to a Playlist", image: UIImage(systemName: "text.badge.plus")) {[weak self] _ in
-            self?.addToPlaylist?()
+        if addToPlaylist != nil {
         }
-        let menu = UIMenu(title: "", children: [addToPlaylist])
-        optionsButton.menu = menu
+        else {
+            menuAction = UIAction(title: "Remove from Playlist",image: UIImage(systemName: "minus.circle"), attributes: .destructive) {[weak self] _ in
+                self?.removeFromPlaylist?()
+            }
+        }
+        
     }
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
@@ -116,7 +142,7 @@ class SongCollectionViewCell: UICollectionViewCell {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-
+    
     override func prepareForReuse() {
         super.prepareForReuse()
         songView.prepareForReuse()

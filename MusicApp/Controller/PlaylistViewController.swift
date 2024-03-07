@@ -11,6 +11,7 @@ class PlaylistViewController: UIViewController {
     let playlist: Playlist
     var data : [SongCellModel] = []
     var tracks : [AudioTrack] = []
+    var isOwnerPlaylist = false
 
     private let collectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewCompositionalLayout(sectionProvider: { _, _ in
         
@@ -113,6 +114,17 @@ extension PlaylistViewController: UICollectionViewDelegate, UICollectionViewData
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: SongCollectionViewCell.identifier, for: indexPath) as! SongCollectionViewCell
         cell.configure(data: data[indexPath.row])
+        if isOwnerPlaylist {
+            cell.songView.removeFromPlaylist = { [weak self] in
+                self?.deleteSongFromPlaylist(at: indexPath)
+            }
+        }
+        else {
+            cell.songView.addToPlaylist = {[weak self] in
+                self?.addSongToPlaylist(songIndexPath: indexPath)
+            }
+        }
+
         return cell
     }
     
@@ -131,6 +143,26 @@ extension PlaylistViewController: UICollectionViewDelegate, UICollectionViewData
         collectionView.deselectItem(at: indexPath, animated: true)
         let track = tracks[indexPath.row]
         PlayAudioManager.shared.playAudioTrack(from: self, tracks: [track])
+    }
+    
+    func deleteSongFromPlaylist(at indexPath: IndexPath){
+        ApiManagers.shared.removeTrackFromPlaylist(track: self.tracks[indexPath.row], playlist: self.playlist) { isSuccess in
+        }
+        self.data.remove(at: indexPath.row)
+        self.tracks.remove(at: indexPath.row)
+        self.collectionView.deleteItems(at: [indexPath])
+
+    }
+    
+    func addSongToPlaylist(songIndexPath: IndexPath){
+        let libraryPlaylistView = MyPlaylistViewController()
+        libraryPlaylistView.selectionHandler = { playlist in
+            ApiManagers.shared.addTrackToPlaylist(track: self.tracks[songIndexPath.row], playlist: playlist) { isSuccess in
+            }
+        }
+        libraryPlaylistView.title = "Select Playlist"
+        present(UINavigationController(rootViewController: libraryPlaylistView),
+                      animated: true, completion: nil)
     }
     
 }

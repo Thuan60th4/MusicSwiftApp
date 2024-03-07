@@ -99,6 +99,10 @@ extension AlbumViewController: UICollectionViewDelegate, UICollectionViewDataSou
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: SongCollectionViewCell.identifier, for: indexPath) as! SongCollectionViewCell
         cell.configure(data: data[indexPath.row])
+        cell.songView.addToPlaylist = { [weak self] in
+            self?.addSongToPlaylist(songIndexPath: indexPath)
+        }
+
         return cell
     }
     
@@ -118,6 +122,17 @@ extension AlbumViewController: UICollectionViewDelegate, UICollectionViewDataSou
         var track = tracks[indexPath.row]
         track.album = self.album
         PlayAudioManager.shared.playAudioTrack(from: self, tracks: [track])
+    }
+    
+    func addSongToPlaylist(songIndexPath: IndexPath){
+        let libraryPlaylistView = MyPlaylistViewController()
+        libraryPlaylistView.selectionHandler = { playlist in
+            ApiManagers.shared.addTrackToPlaylist(track: self.tracks[songIndexPath.row], playlist: playlist) { isSuccess in
+            }
+        }
+        libraryPlaylistView.title = "Select Playlist"
+        present(UINavigationController(rootViewController: libraryPlaylistView),
+                      animated: true, completion: nil)
     }
     
 }
