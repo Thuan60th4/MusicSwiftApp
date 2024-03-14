@@ -85,16 +85,7 @@ class SongViewCell: UIView {
         containLabelStackView.addArrangedSubview(label)
         containLabelStackView.addArrangedSubview(subLabel)
         containStackView.addArrangedSubview(optionsButton)
-        
-        
-        if addToPlaylist != nil {
-        }
-        else {
-            menuAction = UIAction(title: "Remove from Playlist",image: UIImage(systemName: "minus.circle"), attributes: .destructive) {[weak self] _ in
-                self?.removeFromPlaylist?()
-            }
-        }
-        
+                
     }
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")

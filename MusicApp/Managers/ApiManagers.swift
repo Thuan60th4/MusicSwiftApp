@@ -15,7 +15,12 @@ class ApiManagers {
     enum HTTPMethod: String {
         case GET
         case POST
+        case PUT
         case DELETE
+    }
+    
+    enum APIError: Error {
+        case faileedToGetData
     }
     
     func getNewReleases(completion: @escaping (NewReleasesResponse?) -> Void) {
@@ -296,6 +301,49 @@ class ApiManagers {
                    catch {
                        completion(false)
                    }
+               }
+               task.resume()
+           }
+       }
+    
+    func getCurrentUserAlbums(completion: @escaping (Result<[Album], Error>) -> Void) {
+           createRequest(
+               with: "/me/albums",
+               method: .GET
+           ) { request in
+               let task = URLSession.shared.dataTask(with: request) { data, _, error in
+                   guard let data = data, error == nil else {
+                       completion(.failure(APIError.faileedToGetData))
+                       return
+                   }
+                   do {
+                       let result = try JSONDecoder().decode(LibraryAlbumsResponse.self, from: data)
+                       completion(.success(result.items.compactMap({ $0.album })))
+                   }
+                   catch {
+                       completion(.failure(error))
+                   }
+               }
+               task.resume()
+           }
+       }
+    
+    func saveAlbum(album: Album, completion: @escaping (Bool) -> Void) {
+           createRequest(
+               with: "/me/albums?ids=\(album.id)",
+               method: .PUT
+           ) { baseRequest in
+               var request = baseRequest
+               request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+
+               let task = URLSession.shared.dataTask(with: request) { data, response, error in
+                   guard let code = (response as? HTTPURLResponse)?.statusCode,
+                         error == nil else {
+                       completion(false)
+                       return
+                   }
+                   print(code)
+                   completion(code == 200)
                }
                task.resume()
            }

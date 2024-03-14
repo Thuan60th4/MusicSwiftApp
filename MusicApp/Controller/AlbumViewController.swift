@@ -52,6 +52,7 @@ class AlbumViewController: UIViewController {
         title = album.name
         view.backgroundColor = .systemBackground
         navigationItem.largeTitleDisplayMode = .never
+        navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(didTapAddAlbum))
         
         collectionView.register(DetailHeaderCollectionReusableView.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: DetailHeaderCollectionReusableView.identifier)
         collectionView.register(SongCollectionViewCell.self, forCellWithReuseIdentifier: SongCollectionViewCell.identifier)
@@ -80,6 +81,7 @@ class AlbumViewController: UIViewController {
         collectionView.frame = view.bounds
     }
     
+    //MARK: - Action
     func playAllMusic(){
         let tracksWithAlbum : [AudioTrack] = tracks.compactMap({
             var track = $0
@@ -87,6 +89,17 @@ class AlbumViewController: UIViewController {
             return track
         })
         PlayAudioManager.shared.playAudioTrack(from: self, tracks: tracksWithAlbum)
+    }
+    
+    @objc func didTapAddAlbum(){
+        let actionSheet = UIAlertController(title: album.name, message: "Actions", preferredStyle: .actionSheet)
+        actionSheet.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
+        actionSheet.addAction(UIAlertAction(title: "Save Album", style: .default, handler: { [weak self] _ in
+            guard let strongSelf = self else { return }
+            ApiManagers.shared.saveAlbum(album: strongSelf.album) { success in            }
+        }))
+        present(actionSheet, animated: true)
+
     }
 }
 
@@ -102,7 +115,7 @@ extension AlbumViewController: UICollectionViewDelegate, UICollectionViewDataSou
         cell.songView.addToPlaylist = { [weak self] in
             self?.addSongToPlaylist(songIndexPath: indexPath)
         }
-
+        
         return cell
     }
     
@@ -132,7 +145,7 @@ extension AlbumViewController: UICollectionViewDelegate, UICollectionViewDataSou
         }
         libraryPlaylistView.title = "Select Playlist"
         present(UINavigationController(rootViewController: libraryPlaylistView),
-                      animated: true, completion: nil)
+                animated: true, completion: nil)
     }
     
 }

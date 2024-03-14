@@ -129,7 +129,7 @@ extension MyPlaylistViewController: UITableViewDelegate, UITableViewDataSource {
         let playlistData = playlists[indexPath.row]
         
         if let selectionHandler = selectionHandler{
-            //Add a song to playlist
+            //Add a song to playlist from home
             selectionHandler(playlistData)
             dismiss(animated: true, completion: nil)
             return
